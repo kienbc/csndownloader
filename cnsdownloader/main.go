@@ -140,7 +140,11 @@ func downloadFile(dir string, url string, wg *sync.WaitGroup) (err error) {
 
 	path := dir + filename
 
-	fmt.Println("started ", path)
+	//check file exist
+	if _, err := os.Stat(path); err == nil {
+		wg.Done()
+		return nil
+	}
 
 	//create the file
 	out, err := os.Create(path)
@@ -151,6 +155,7 @@ func downloadFile(dir string, url string, wg *sync.WaitGroup) (err error) {
 	defer out.Close()
 
 	//get the data
+	fmt.Println("downloading ", path)
 	resp, err := http.Get(url)
 	if err != nil {
 		wg.Done()
